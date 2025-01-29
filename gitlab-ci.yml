@@ -1,0 +1,35 @@
+stages:          # List of stages for jobs, and their order of execution
+  - build
+  - test
+  - deploy
+
+build-job:       # This job runs in the build stage, which runs first.
+  stage: build
+  image: maven:3.8.6-jdk-11
+  script:
+    - echo "Compiling the code..."
+    - echo "Compile complete."
+    - cd eclipse_git_workspace/spring-boot-hello-world-example
+    - mvn clean install  
+  only:
+    changes:
+      - eclipse_git_workspace/spring-boot-hello-world-example/**
+      
+
+test_job:       # Ensure the job name is consistent (use hyphen or underscore)
+  stage: test
+  image: maven:3.8.6-jdk-11
+  script:
+    - echo "Running tests..."
+    - cd eclipse_git_workspace/spring-boot-hello-world-example  
+    - mvn test  
+  only:
+    changes:
+      - eclipse_git_workspace/spring-boot-hello-world-example/**
+
+deploy-job:      # This job runs in the deploy stage.
+  stage: deploy  # It only runs when *both* jobs in the test stage complete successfully.
+  environment: production
+  script:
+    - echo "Deploying application..."
+    - echo "Application successfully deployed."
